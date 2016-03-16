@@ -5,15 +5,15 @@ import com.google.auto.value.AutoValue;
 /**
  * This is declared as an interface so that projects like Sponge can take
  * advantage of <a href="https://github.com/SpongePowered/Mixin">Mixins</a> to
- * make the native vector behave like a {@link SchematicPosition}.
+ * make the native vector behave like a {@link Schematic3Point}.
  */
-public interface SchematicPosition {
+public interface Schematic3Point {
 
     @AutoValue
-    abstract class DefaultImpl implements SchematicPosition {
+    abstract class DefaultImpl implements Schematic3Point {
 
-        public static SchematicPosition create(int x, int y, int z) {
-            return new AutoValue_SchematicPosition_DefaultImpl(x, y, z);
+        public static Schematic3Point create(int x, int y, int z) {
+            return new AutoValue_Schematic3Point_DefaultImpl(x, y, z);
         }
 
         DefaultImpl() {
@@ -24,8 +24,8 @@ public interface SchematicPosition {
             if (o == this) {
                 return true;
             }
-            if (o instanceof SchematicPosition) {
-                SchematicPosition that = (SchematicPosition) o;
+            if (o instanceof Schematic3Point) {
+                Schematic3Point that = (Schematic3Point) o;
                 return (this.getX() == that.getX())
                         && (this.getY() == that.getY())
                         && (this.getZ() == that.getZ());
@@ -42,9 +42,9 @@ public interface SchematicPosition {
     int getZ();
 
     /**
-     * Note: All {@link SchematicPosition} instances must return {@code true} if
-     * {@code obj} is an instance of {@code SchematicPosition} and the
-     * coordinate position is equal. See {@link DefaultImpl} for an example
+     * Note: All {@link Schematic3Point} instances must return {@code true} if
+     * {@code obj} is an instance of {@code Schematic3Point} and the coordinate
+     * position is equal. See {@link DefaultImpl} for an example
      * {@link DefaultImpl#equals(Object) equals} implementation.
      * 
      * @see DefaultImpl#equals(Object)

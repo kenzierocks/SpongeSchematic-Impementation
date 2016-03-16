@@ -23,7 +23,6 @@ apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'application'
 apply plugin: 'aversion-util'
 apply plugin: 'aversion-maven'
 apply plugin: 'aversion-apt'
@@ -31,8 +30,6 @@ apply plugin: 'aversion-apt'
 compileJava {
     options.incremental = true
 }
-
-mainClassName = 'me.kenzierocks.converse.ConverseRelay'
 
 util {
     javaVersion = '1.8'

@@ -79,8 +79,6 @@ dependencies {
     compile group: 'com.google.code.gson', name: 'gson', version: '2.3'
     compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
     addAPTReqWComp group: 'com.google.guava', name: 'guava', version: '18.0'
-    addAPT group: 'com.google.auto.factory', name: 'auto-factory', version: '1.0-SNAPSHOT'
-    addAPT group: 'com.google.auto.service', name: 'auto-service', version: '1.0-SNAPSHOT'
     addAPT group: 'com.google.auto.value', name: 'auto-value', version: '1.2-SNAPSHOT'
     addAPTReq name: 'aopalliance'
     addAPTReq name: 'asm'

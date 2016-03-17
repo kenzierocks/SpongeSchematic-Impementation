@@ -72,8 +72,7 @@ dependencies {
     compile group: 'ch.qos.logback', name: 'logback-classic', version: LOGBACK_VERSION
     // Because why not?
     runtime group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.5'
-    // Go with the flow...
-    compile group: 'com.flowpowered', name: 'flow-nbt', version: '1.0.1-SNAPSHOT'
+    compile files('libs/JNBT_1.4.jar')
     compile group: 'org.slf4j', name: 'slf4j-api', version: SLF_VERSION
     compile group: 'com.google.code.gson', name: 'gson', version: '2.3'
     compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'

@@ -8,55 +8,52 @@ import me.kenzierocks.spongeschem.util.BitUtil;
 
 public abstract class BlockData {
 
-    public static Mutable mutable(int width, int height, int length) {
-        return new Mutable(width, height, length, Pallette.mutable(),
+    public static Mutable mutable(Schematic3Point dimensions) {
+        return mutable(dimensions, Pallette.mutable(),
                 ByteArrayBitSet.mutable());
     }
 
-    public static Mutable mutable(int width, int height, int length,
-            Pallette pallette, ByteArrayBitSet bitset) {
-        return new Mutable(width, height, length, pallette, bitset);
+    public static Mutable mutable(Schematic3Point dimensions, Pallette pallette,
+            ByteArrayBitSet bitset) {
+        return new Mutable(dimensions, pallette, bitset);
     }
 
     public static final class Mutable extends BlockData {
 
-        private Mutable(int width, int height, int length, Pallette pallette,
+        private Mutable(Schematic3Point dimensions, Pallette pallette,
                 ByteArrayBitSet sourceSet) {
-            super(width, height, length, pallette.toMutable(),
+            super(dimensions, pallette.toMutable(),
                     ByteArrayBitSet.mutable(sourceSet.getData()));
         }
 
-        public void setBlock(int x, int y, int z, String id) {
+        public void setBlock(Schematic3Point position, String id) {
             BitUtil.spreadBits(this.pallete.getIndexFromId(id),
-                    computeBitIndex(x, y, z), this.pallete.getBitsPerBlock(),
+                    computeBitIndex(position), this.pallete.getBitsPerBlock(),
                     this.blockData.toMutable());
         }
 
     }
 
-    public static Immutable immutable(int width, int height, int length) {
-        return new Immutable(width, height, length, Pallette.immutable(),
+    public static Immutable immutable(Schematic3Point dimensions) {
+        return new Immutable(dimensions, Pallette.immutable(),
                 ByteArrayBitSet.immutable());
     }
 
-    public static Immutable immutable(int width, int height, int length,
+    public static Immutable immutable(Schematic3Point dimensions,
             Pallette pallette, ByteArrayBitSet bitset) {
-        return new Immutable(width, height, length, pallette, bitset);
+        return new Immutable(dimensions, pallette, bitset);
     }
 
     public static final class Immutable extends BlockData {
 
-        private Immutable(int width, int height, int length, Pallette pallette,
+        private Immutable(Schematic3Point dimensions, Pallette pallette,
                 ByteArrayBitSet sourceSet) {
-            super(width, height, length, pallette.toImmutable(),
-                    sourceSet.toImmutable());
+            super(dimensions, pallette.toImmutable(), sourceSet.toImmutable());
         }
 
     }
 
-    private final int width;
-    private final int height;
-    private final int length;
+    private final Schematic3Point dimensions;
     protected final Pallette pallete;
     protected final ByteArrayBitSet blockData;
 
@@ -68,11 +65,16 @@ public abstract class BlockData {
         return ushort;
     }
 
-    protected BlockData(int width, int height, int length, Pallette pallette,
+    private final Schematic3Point checkUShort(Schematic3Point pt, String name) {
+        checkUShort(pt.getX(), name + ".x");
+        checkUShort(pt.getY(), name + ".y");
+        checkUShort(pt.getZ(), name + ".z");
+        return pt;
+    }
+
+    protected BlockData(Schematic3Point dimensions, Pallette pallette,
             ByteArrayBitSet blockData) {
-        this.width = checkUShort(width, "width");
-        this.height = checkUShort(height, "height");
-        this.length = checkUShort(length, "length");
+        this.dimensions = checkUShort(dimensions, "dimensions");
         this.pallete = checkNotNull(pallette);
         this.blockData = checkNotNull(blockData);
     }
@@ -81,30 +83,27 @@ public abstract class BlockData {
         return this.pallete;
     }
 
-    protected int computeBitIndex(int x, int y, int z) {
+    protected int computeBitIndex(Schematic3Point pos) {
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
+        int w = getDimensions().getX();
+        int h = getDimensions().getY();
         checkArgument(x >= 0, "must be positive");
         checkArgument(y >= 0, "must be positive");
         checkArgument(z >= 0, "must be positive");
-        return x + y * getWidth() + z * getWidth() * getHeight();
+        return x + y * w + z * w * h;
     }
 
-    public final String getBlock(int x, int y, int z) {
-        int index = computeBitIndex(x, y, z);
+    public final String getBlock(Schematic3Point pos) {
+        int index = computeBitIndex(pos);
         int bpb = this.pallete.getBitsPerBlock();
         int palleteIndex = BitUtil.collectBits(index, bpb, this.blockData);
         return this.pallete.getIdFromIndex(palleteIndex);
     }
 
-    public int getWidth() {
-        return this.width;
-    }
-
-    public int getHeight() {
-        return this.height;
-    }
-
-    public int getLength() {
-        return this.length;
+    public Schematic3Point getDimensions() {
+        return this.dimensions;
     }
 
 }

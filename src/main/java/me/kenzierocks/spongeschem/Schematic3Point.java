@@ -9,6 +9,8 @@ import com.google.auto.value.AutoValue;
  */
 public interface Schematic3Point {
 
+    static final Schematic3Point ZERO = DefaultImpl.create(0, 0, 0);
+
     @AutoValue
     abstract class DefaultImpl implements Schematic3Point {
 

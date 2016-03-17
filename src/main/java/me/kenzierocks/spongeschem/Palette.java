@@ -10,13 +10,13 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 
-public abstract class Pallette {
+public abstract class Palette {
 
     public static Mutable mutable() {
         return new Mutable();
     }
 
-    public static final class Mutable extends Pallette {
+    public static final class Mutable extends Palette {
 
         private Mutable() {
             super(HashBiMap.create());
@@ -52,7 +52,7 @@ public abstract class Pallette {
         return new Immutable();
     }
 
-    public static final class Immutable extends Pallette {
+    public static final class Immutable extends Palette {
 
         private Immutable() {
             super(ImmutableBiMap.of());
@@ -67,7 +67,7 @@ public abstract class Pallette {
     protected final BitSet usedIndicies = new BitSet();
     protected final BiMap<ResourceLocation, Integer> blockIdMap;
 
-    protected Pallette(BiMap<ResourceLocation, Integer> blockIdMap) {
+    protected Palette(BiMap<ResourceLocation, Integer> blockIdMap) {
         this.blockIdMap = blockIdMap;
         this.blockIdMap.values().forEach(this.usedIndicies::set);
     }

@@ -9,18 +9,18 @@ import me.kenzierocks.spongeschem.util.BitUtil;
 public abstract class BlockData {
 
     public static Mutable mutable(Schematic3PointI dimensions) {
-        return mutable(dimensions, Pallette.mutable(),
+        return mutable(dimensions, Palette.mutable(),
                 ByteArrayBitSet.mutable());
     }
 
     public static Mutable mutable(Schematic3PointI dimensions,
-            Pallette pallette, ByteArrayBitSet bitset) {
+            Palette pallette, ByteArrayBitSet bitset) {
         return new Mutable(dimensions, pallette, bitset);
     }
 
     public static final class Mutable extends BlockData {
 
-        private Mutable(Schematic3PointI dimensions, Pallette pallette,
+        private Mutable(Schematic3PointI dimensions, Palette pallette,
                 ByteArrayBitSet sourceSet) {
             super(dimensions, pallette.toMutable(),
                     ByteArrayBitSet.mutable(sourceSet.getData()));
@@ -35,18 +35,18 @@ public abstract class BlockData {
     }
 
     public static Immutable immutable(Schematic3PointI dimensions) {
-        return new Immutable(dimensions, Pallette.immutable(),
+        return new Immutable(dimensions, Palette.immutable(),
                 ByteArrayBitSet.immutable());
     }
 
     public static Immutable immutable(Schematic3PointI dimensions,
-            Pallette pallette, ByteArrayBitSet bitset) {
+            Palette pallette, ByteArrayBitSet bitset) {
         return new Immutable(dimensions, pallette, bitset);
     }
 
     public static final class Immutable extends BlockData {
 
-        private Immutable(Schematic3PointI dimensions, Pallette pallette,
+        private Immutable(Schematic3PointI dimensions, Palette pallette,
                 ByteArrayBitSet sourceSet) {
             super(dimensions, pallette.toImmutable(), sourceSet.toImmutable());
         }
@@ -54,7 +54,7 @@ public abstract class BlockData {
     }
 
     private final Schematic3PointI dimensions;
-    protected final Pallette pallete;
+    protected final Palette pallete;
     protected final ByteArrayBitSet blockData;
 
     private final int checkUShort(int ushort, String name) {
@@ -73,14 +73,14 @@ public abstract class BlockData {
         return pt;
     }
 
-    protected BlockData(Schematic3PointI dimensions, Pallette pallette,
+    protected BlockData(Schematic3PointI dimensions, Palette pallette,
             ByteArrayBitSet blockData) {
         this.dimensions = checkUShort(dimensions, "dimensions");
         this.pallete = checkNotNull(pallette);
         this.blockData = checkNotNull(blockData);
     }
 
-    public Pallette getPallete() {
+    public Palette getPallete() {
         return this.pallete;
     }
 

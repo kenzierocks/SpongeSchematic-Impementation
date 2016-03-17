@@ -22,7 +22,7 @@ public abstract class Pallette {
             super(HashBiMap.create());
         }
 
-        private Mutable(Map<String, Integer> source) {
+        private Mutable(Map<ResourceLocation, Integer> source) {
             super(HashBiMap.create(source));
         }
 
@@ -30,18 +30,18 @@ public abstract class Pallette {
             return this.usedIndicies.nextClearBit(0);
         }
 
-        public void add(String id) {
+        public void add(ResourceLocation id) {
             put(id, findUnusedIndex());
         }
 
-        public void put(String id, int index) {
+        public void put(ResourceLocation id, int index) {
             checkArgument(!this.usedIndicies.get(index),
                     "cannot use index %s, it is already present", index);
             this.usedIndicies.set(index);
             this.blockIdMap.put(id, index);
         }
 
-        public void clear(String id) {
+        public void clear(ResourceLocation id) {
             Optional.ofNullable(this.blockIdMap.remove(id))
                     .ifPresent(index -> this.usedIndicies.clear(index));
         }
@@ -58,25 +58,25 @@ public abstract class Pallette {
             super(ImmutableBiMap.of());
         }
 
-        private Immutable(Map<String, Integer> source) {
+        private Immutable(Map<ResourceLocation, Integer> source) {
             super(ImmutableBiMap.copyOf(source));
         }
 
     }
 
     protected final BitSet usedIndicies = new BitSet();
-    protected final BiMap<String, Integer> blockIdMap;
+    protected final BiMap<ResourceLocation, Integer> blockIdMap;
 
-    protected Pallette(BiMap<String, Integer> blockIdMap) {
+    protected Pallette(BiMap<ResourceLocation, Integer> blockIdMap) {
         this.blockIdMap = blockIdMap;
         this.blockIdMap.values().forEach(this.usedIndicies::set);
     }
 
-    public String getIdFromIndex(int index) {
+    public ResourceLocation getIdFromIndex(int index) {
         return this.blockIdMap.inverse().get(index);
     }
 
-    public int getIndexFromId(String id) {
+    public int getIndexFromId(ResourceLocation id) {
         return this.blockIdMap.get(id);
     }
 

@@ -1,7 +1,7 @@
 package me.kenzierocks.spongeschem;
 
-public abstract class VersionedContentHolder {
+public interface VersionedContentHolder {
 
-    public abstract int getContentVersion();
+    int getContentVersion();
 
 }

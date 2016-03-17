@@ -8,6 +8,4 @@ public abstract class SchematicEntity extends VersionedContentHolder {
     SchematicEntity() {
     }
 
-    public abstract int getFoobar();
-
 }

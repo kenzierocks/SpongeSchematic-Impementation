@@ -1,6 +1,7 @@
 package me.kenzierocks.spongeschem;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.util.BitSet;
 import java.util.Map;
@@ -14,6 +15,10 @@ public abstract class Palette {
 
     public static Mutable mutable() {
         return new Mutable();
+    }
+
+    public static Mutable mutable(Map<ResourceLocation, Integer> source) {
+        return new Mutable(source);
     }
 
     public static final class Mutable extends Palette {
@@ -52,6 +57,10 @@ public abstract class Palette {
         return new Immutable();
     }
 
+    public static Immutable immutable(Map<ResourceLocation, Integer> source) {
+        return new Immutable(source);
+    }
+
     public static final class Immutable extends Palette {
 
         private Immutable() {
@@ -80,14 +89,14 @@ public abstract class Palette {
         return this.blockIdMap.get(id);
     }
 
-    public int getLength() {
-        return this.blockIdMap.size();
+    public int getMax() {
+        return this.usedIndicies.length();
     }
 
     public int getBitsPerBlock() {
         // This is the `ceil(lg(length))` specified in the schematic spec
         // But way more optimized.
-        return Integer.SIZE - Integer.numberOfLeadingZeros(getLength() - 1);
+        return Integer.SIZE - Integer.numberOfLeadingZeros(getMax() - 1);
     }
 
     public Immutable toImmutable() {
@@ -102,6 +111,14 @@ public abstract class Palette {
             return (Mutable) this;
         }
         return new Mutable(this.blockIdMap);
+    }
+
+    /**
+     * Verifies that all entries are {@code < (paletteMax - 1)}.
+     */
+    public void verifyMax(int paletteMax) {
+        checkState(this.usedIndicies.nextSetBit(paletteMax - 1) == -1,
+                "entry over %s", paletteMax - 1);
     }
 
 }

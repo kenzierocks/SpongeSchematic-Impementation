@@ -16,16 +16,16 @@ public abstract class BlockData {
                 ByteArrayBitSet.mutable());
     }
 
-    public static Mutable mutable(Schematic3PointI dimensions, Palette pallette,
+    public static Mutable mutable(Schematic3PointI dimensions, Palette palette,
             ByteArrayBitSet bitset) {
-        return new Mutable(dimensions, pallette, bitset);
+        return new Mutable(dimensions, palette, bitset);
     }
 
     public static final class Mutable extends BlockData {
 
-        private Mutable(Schematic3PointI dimensions, Palette pallette,
+        private Mutable(Schematic3PointI dimensions, Palette palette,
                 ByteArrayBitSet sourceSet) {
-            super(dimensions, pallette.toMutable(),
+            super(dimensions, palette.toMutable(),
                     ByteArrayBitSet.mutable(sourceSet.getData()));
         }
 
@@ -48,15 +48,15 @@ public abstract class BlockData {
     }
 
     public static Immutable immutable(Schematic3PointI dimensions,
-            Palette pallette, ByteArrayBitSet bitset) {
-        return new Immutable(dimensions, pallette, bitset);
+            Palette palette, ByteArrayBitSet bitset) {
+        return new Immutable(dimensions, palette, bitset);
     }
 
     public static final class Immutable extends BlockData {
 
-        private Immutable(Schematic3PointI dimensions, Palette pallette,
+        private Immutable(Schematic3PointI dimensions, Palette palette,
                 ByteArrayBitSet sourceSet) {
-            super(dimensions, pallette.toImmutable(), sourceSet.toImmutable());
+            super(dimensions, palette.toImmutable(), sourceSet.toImmutable());
         }
 
     }
@@ -81,10 +81,10 @@ public abstract class BlockData {
         return pt;
     }
 
-    protected BlockData(Schematic3PointI dimensions, Palette pallette,
+    protected BlockData(Schematic3PointI dimensions, Palette palette,
             ByteArrayBitSet blockData) {
         this.dimensions = checkUShort(dimensions, "dimensions");
-        this.pallete = checkNotNull(pallette);
+        this.pallete = checkNotNull(palette);
         this.blockData = checkNotNull(blockData);
     }
 

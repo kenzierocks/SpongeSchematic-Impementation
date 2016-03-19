@@ -27,4 +27,5 @@ build/
 /.apt_generated/
 .factorypath
 /config/
+!/libs/JNBT_1.4.jar
 

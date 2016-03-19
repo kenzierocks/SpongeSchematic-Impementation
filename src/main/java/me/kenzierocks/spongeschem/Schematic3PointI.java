@@ -5,17 +5,17 @@ import com.google.auto.value.AutoValue;
 /**
  * This is declared as an interface so that projects like Sponge can take
  * advantage of <a href="https://github.com/SpongePowered/Mixin">Mixins</a> to
- * make the native vector behave like a {@link Schematic3Point}.
+ * make the native vector behave like a {@link Schematic3PointI}.
  */
-public interface Schematic3Point {
+public interface Schematic3PointI {
 
-    static final Schematic3Point ZERO = DefaultImpl.create(0, 0, 0);
+    static final Schematic3PointI ZERO = DefaultImpl.create(0, 0, 0);
 
     @AutoValue
-    abstract class DefaultImpl implements Schematic3Point {
+    abstract class DefaultImpl implements Schematic3PointI {
 
-        public static Schematic3Point create(int x, int y, int z) {
-            return new AutoValue_Schematic3Point_DefaultImpl(x, y, z);
+        public static Schematic3PointI create(int x, int y, int z) {
+            return new AutoValue_Schematic3PointI_DefaultImpl(x, y, z);
         }
 
         DefaultImpl() {
@@ -26,8 +26,8 @@ public interface Schematic3Point {
             if (o == this) {
                 return true;
             }
-            if (o instanceof Schematic3Point) {
-                Schematic3Point that = (Schematic3Point) o;
+            if (o instanceof Schematic3PointI) {
+                Schematic3PointI that = (Schematic3PointI) o;
                 return (this.getX() == that.getX())
                         && (this.getY() == that.getY())
                         && (this.getZ() == that.getZ());
@@ -44,8 +44,8 @@ public interface Schematic3Point {
     int getZ();
 
     /**
-     * Note: All {@link Schematic3Point} instances must return {@code true} if
-     * {@code obj} is an instance of {@code Schematic3Point} and the coordinate
+     * Note: All {@link Schematic3PointI} instances must return {@code true} if
+     * {@code obj} is an instance of {@code Schematic3PointI} and the coordinate
      * position is equal. See {@link DefaultImpl} for an example
      * {@link DefaultImpl#equals(Object) equals} implementation.
      * 

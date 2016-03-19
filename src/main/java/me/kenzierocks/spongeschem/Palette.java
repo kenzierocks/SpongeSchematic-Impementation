@@ -1,28 +1,34 @@
 package me.kenzierocks.spongeschem;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.util.BitSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 
-public abstract class Pallette {
+public abstract class Palette {
 
     public static Mutable mutable() {
         return new Mutable();
     }
 
-    public static final class Mutable extends Pallette {
+    public static Mutable mutable(Map<ResourceLocation, Integer> source) {
+        return new Mutable(source);
+    }
+
+    public static final class Mutable extends Palette {
 
         private Mutable() {
             super(HashBiMap.create());
         }
 
-        private Mutable(Map<String, Integer> source) {
+        private Mutable(Map<ResourceLocation, Integer> source) {
             super(HashBiMap.create(source));
         }
 
@@ -30,18 +36,18 @@ public abstract class Pallette {
             return this.usedIndicies.nextClearBit(0);
         }
 
-        public void add(String id) {
+        public void add(ResourceLocation id) {
             put(id, findUnusedIndex());
         }
 
-        public void put(String id, int index) {
+        public void put(ResourceLocation id, int index) {
             checkArgument(!this.usedIndicies.get(index),
                     "cannot use index %s, it is already present", index);
             this.usedIndicies.set(index);
             this.blockIdMap.put(id, index);
         }
 
-        public void clear(String id) {
+        public void clear(ResourceLocation id) {
             Optional.ofNullable(this.blockIdMap.remove(id))
                     .ifPresent(index -> this.usedIndicies.clear(index));
         }
@@ -52,42 +58,53 @@ public abstract class Pallette {
         return new Immutable();
     }
 
-    public static final class Immutable extends Pallette {
+    public static Immutable immutable(Map<ResourceLocation, Integer> source) {
+        return new Immutable(source);
+    }
+
+    public static final class Immutable extends Palette {
 
         private Immutable() {
             super(ImmutableBiMap.of());
         }
 
-        private Immutable(Map<String, Integer> source) {
+        private Immutable(Map<ResourceLocation, Integer> source) {
             super(ImmutableBiMap.copyOf(source));
         }
 
     }
 
     protected final BitSet usedIndicies = new BitSet();
-    protected final BiMap<String, Integer> blockIdMap;
+    protected final BiMap<ResourceLocation, Integer> blockIdMap;
 
-    protected Pallette(BiMap<String, Integer> blockIdMap) {
+    protected Palette(BiMap<ResourceLocation, Integer> blockIdMap) {
         this.blockIdMap = blockIdMap;
         this.blockIdMap.values().forEach(this.usedIndicies::set);
     }
 
-    public String getIdFromIndex(int index) {
-        return this.blockIdMap.inverse().get(index);
+    public Optional<ResourceLocation> getIdFromIndex(int index) {
+        return Optional.ofNullable(this.blockIdMap.inverse().get(index));
     }
 
-    public int getIndexFromId(String id) {
-        return this.blockIdMap.get(id);
+    public OptionalInt getIndexFromId(ResourceLocation id) {
+        if (!this.blockIdMap.containsKey(id)) {
+            return OptionalInt.empty();
+        }
+        return OptionalInt.of(this.blockIdMap.get(id));
     }
 
-    public int getLength() {
-        return this.blockIdMap.size();
+    public int getMax() {
+        return this.usedIndicies.length();
     }
 
     public int getBitsPerBlock() {
         // This is the `ceil(lg(length))` specified in the schematic spec
         // But way more optimized.
-        return Integer.SIZE - Integer.numberOfLeadingZeros(getLength() - 1);
+        // Special case: empty values should be 0
+        if (getMax() <= 1) {
+            return 0;
+        }
+        return Integer.SIZE - Integer.numberOfLeadingZeros(getMax() - 1);
     }
 
     public Immutable toImmutable() {
@@ -102,6 +119,19 @@ public abstract class Pallette {
             return (Mutable) this;
         }
         return new Mutable(this.blockIdMap);
+    }
+
+    /**
+     * Verifies that all entries are {@code < (paletteMax - 1)}.
+     */
+    public void verifyMax(int paletteMax) {
+        if (paletteMax == 1) {
+            checkState(this.usedIndicies.isEmpty(),
+                    "found more than 0 entries");
+            return;
+        }
+        checkState(this.usedIndicies.nextSetBit(paletteMax - 1) == -1,
+                "entry over %s", paletteMax - 1);
     }
 
 }

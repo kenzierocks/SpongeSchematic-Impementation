@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="https://kenzierocks.me/xmlnbt/"
+	targetNamespace="https://kenzierocks.me/xmlnbt/" elementFormDefault="qualified"
+	attributeFormDefault="unqualified">
+
+	<!-- Tag type definitions -->
+
+	<complexType name="includeall">
+		<!-- A special type for including all tag elements -->
+		<all>
+			<!-- TODO -->
+		</all>
+		<attribute name="name" type="string" />
+	</complexType>
+
+	<complexType name="CompoundTag">
+		<complexContent>
+			<extension base="tns:includeall">
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="ListTag">
+		<!-- SAME THING AS COMPOUND???? -->
+		<complexContent>
+			<extension base="tns:CompoundTag">
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="ByteArrayTag">
+		<all>
+			<element name="byte" type="tns:ByteTag" />
+		</all>
+		<attribute name="name" type="string" />
+	</complexType>
+
+	<complexType name="ByteTag">
+		<simpleContent>
+			<extension base="byte">
+				<attribute name="name" type="string" />
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="IntArrayTag">
+		<all>
+			<element name="int" type="tns:IntTag" />
+		</all>
+		<attribute name="name" type="string" />
+	</complexType>
+
+	<complexType name="IntTag">
+		<simpleContent>
+			<extension base="int">
+				<attribute name="name" type="string" />
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="ShortTag">
+		<simpleContent>
+			<extension base="short">
+				<attribute name="name" type="string" />
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="LongTag">
+		<simpleContent>
+			<extension base="long">
+				<attribute name="name" type="string" />
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="FloatTag">
+		<simpleContent>
+			<extension base="float">
+				<attribute name="name" type="string" />
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="DoubleTag">
+		<simpleContent>
+			<extension base="double">
+				<attribute name="name" type="string" />
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="StringTag">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="name" type="string" />
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<!-- Main tag definitions -->
+	<element name="compound" type="tns:CompoundTag" />
+	<element name="bytearray" type="tns:ByteArrayTag" />
+	<element name="byte" type="tns:ByteTag" />
+	<element name="double" type="tns:DoubleTag" />
+	<element name="float" type="tns:FloatTag" />
+	<element name="intarray" type="tns:IntArrayTag" />
+	<element name="int" type="tns:IntTag" />
+	<element name="long" type="tns:LongTag" />
+	<element name="short" type="tns:ShortTag" />
+	<element name="string" type="tns:StringTag" />
+</schema>

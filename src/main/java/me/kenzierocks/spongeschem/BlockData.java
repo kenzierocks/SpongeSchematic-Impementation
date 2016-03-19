@@ -4,6 +4,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.Optional;
+import java.util.OptionalInt;
+
 import me.kenzierocks.spongeschem.util.BitUtil;
 
 public abstract class BlockData {
@@ -13,8 +16,8 @@ public abstract class BlockData {
                 ByteArrayBitSet.mutable());
     }
 
-    public static Mutable mutable(Schematic3PointI dimensions,
-            Palette pallette, ByteArrayBitSet bitset) {
+    public static Mutable mutable(Schematic3PointI dimensions, Palette pallette,
+            ByteArrayBitSet bitset) {
         return new Mutable(dimensions, pallette, bitset);
     }
 
@@ -27,9 +30,14 @@ public abstract class BlockData {
         }
 
         public void setBlock(Schematic3PointI position, ResourceLocation id) {
-            BitUtil.spreadBits(this.pallete.getIndexFromId(id),
-                    computeBitIndex(position), this.pallete.getBitsPerBlock(),
-                    this.blockData.toMutable());
+            OptionalInt index = this.pallete.getIndexFromId(id);
+            if (!index.isPresent()) {
+                this.pallete.toMutable().add(id);
+                index = this.pallete.getIndexFromId(id);
+                checkState(index.isPresent(), "absent after insert");
+            }
+            BitUtil.spreadBits(index.getAsInt(), computeBitIndex(position),
+                    this.pallete.getBitsPerBlock(), this.blockData.toMutable());
         }
 
     }
@@ -96,7 +104,7 @@ public abstract class BlockData {
         return x + y * w + z * w * h;
     }
 
-    public final ResourceLocation getBlock(Schematic3PointI pos) {
+    public final Optional<ResourceLocation> getBlock(Schematic3PointI pos) {
         int index = computeBitIndex(pos);
         int bpb = this.pallete.getBitsPerBlock();
         int palleteIndex = BitUtil.collectBits(index, bpb, this.blockData);

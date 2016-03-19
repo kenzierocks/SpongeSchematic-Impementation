@@ -28,7 +28,7 @@ import com.jcabi.xml.XMLDocument;
  */
 public final class XmlToNbt {
 
-    private static final String COMPOUND = "compund";
+    private static final String COMPOUND = "compound";
     private static final String BYTE_ARR = "bytearray";
     private static final String BYTE = "byte";
     private static final String DOUBLE = "double";
@@ -41,17 +41,22 @@ public final class XmlToNbt {
     private static final String STRING = "string";
 
     public static CompoundTag transform(XMLDocument obj) {
-        List<XML> compoundTags = obj.nodes("//" + COMPOUND);
+        // Because XPATH is stupid
+        List<XML> compoundTags =
+                obj.nodes("*").stream()
+                        .filter(node -> node.node().getNodeName()
+                                .equals("compound"))
+                        .collect(Collectors.toList());
+        checkState(!compoundTags.isEmpty(), "no root compound tag in %s", obj);
         checkState(compoundTags.size() == 1,
                 "too many root compound tags in %s", obj);
-        CompoundTag tag = parseCompoundTag(compoundTags.get(0), true);
+        CompoundTag tag = parseCompoundTag(compoundTags.get(0));
         return tag;
     }
 
     private static String getName(XML xml) {
         List<String> nameAttr = xml.xpath("@name");
-        checkState(nameAttr.size() == 1, "name is required for tags");
-        return nameAttr.get(0);
+        return nameAttr.stream().findFirst().orElse("");
     }
 
     private static Tag parseTag(XML xml) {
@@ -85,20 +90,13 @@ public final class XmlToNbt {
     }
 
     private static CompoundTag parseCompoundTag(XML xml) {
-        return parseCompoundTag(xml, false);
-    }
-
-    private static CompoundTag parseCompoundTag(XML xml, boolean root) {
-        List<XML> items = xml.nodes("*");
-        String name;
-        if (root) {
-            name = "";
-        } else {
-            name = getName(xml);
-        }
+        List<XML> items = xml.nodes("./*");
+        String name = getName(xml);
         ImmutableMap.Builder<String, Tag> data = ImmutableMap.builder();
-        for (XML mapItem : items) {
-            Tag tag = parseTag(mapItem);
+        for (XML item : items) {
+            Tag tag = parseTag(item);
+            checkState(tag.getName() != null && !tag.getName().trim().isEmpty(),
+                    "tags in compound tags must have names: %s didn't", item);
             data.put(tag.getName(), tag);
         }
         return new CompoundTag(name, data.build());

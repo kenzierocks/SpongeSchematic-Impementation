@@ -2,6 +2,8 @@ package me.kenzierocks.spongeschem;
 
 import java.util.Collection;
 
+import javax.annotation.Nullable;
+
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 
@@ -15,8 +17,9 @@ public abstract class Schematic {
 
     public static final Builder builder() {
         return new AutoValue_Schematic.Builder()
-                .version(CURRENT_SCHEMATIC_VERSION).offset(Schematic3PointI.ZERO)
-                .entities(ImmutableList.of()).tileEntities(ImmutableList.of());
+                .version(CURRENT_SCHEMATIC_VERSION)
+                .offset(Schematic3PointI.ZERO).entities(ImmutableList.of())
+                .tileEntities(ImmutableList.of());
     }
 
     @AutoValue.Builder
@@ -24,7 +27,7 @@ public abstract class Schematic {
 
         public abstract Builder version(int version);
 
-        public abstract Builder metadata(Metadata metadata);
+        public abstract Builder metadata(@Nullable Metadata metadata);
 
         public abstract Builder offset(Schematic3PointI offset);
 
@@ -51,6 +54,7 @@ public abstract class Schematic {
 
     public abstract int getVersion();
 
+    @Nullable
     public abstract Metadata getMetadata();
 
     public abstract Schematic3PointI getOffset();

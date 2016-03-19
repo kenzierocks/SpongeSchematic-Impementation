@@ -6,6 +6,7 @@ import static com.google.common.base.Preconditions.checkState;
 import java.util.BitSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -81,12 +82,15 @@ public abstract class Palette {
         this.blockIdMap.values().forEach(this.usedIndicies::set);
     }
 
-    public ResourceLocation getIdFromIndex(int index) {
-        return this.blockIdMap.inverse().get(index);
+    public Optional<ResourceLocation> getIdFromIndex(int index) {
+        return Optional.ofNullable(this.blockIdMap.inverse().get(index));
     }
 
-    public int getIndexFromId(ResourceLocation id) {
-        return this.blockIdMap.get(id);
+    public OptionalInt getIndexFromId(ResourceLocation id) {
+        if (!this.blockIdMap.containsKey(id)) {
+            return OptionalInt.empty();
+        }
+        return OptionalInt.of(this.blockIdMap.get(id));
     }
 
     public int getMax() {
@@ -96,6 +100,10 @@ public abstract class Palette {
     public int getBitsPerBlock() {
         // This is the `ceil(lg(length))` specified in the schematic spec
         // But way more optimized.
+        // Special case: empty values should be 0
+        if (getMax() <= 1) {
+            return 0;
+        }
         return Integer.SIZE - Integer.numberOfLeadingZeros(getMax() - 1);
     }
 
@@ -117,6 +125,11 @@ public abstract class Palette {
      * Verifies that all entries are {@code < (paletteMax - 1)}.
      */
     public void verifyMax(int paletteMax) {
+        if (paletteMax == 1) {
+            checkState(this.usedIndicies.isEmpty(),
+                    "found more than 0 entries");
+            return;
+        }
         checkState(this.usedIndicies.nextSetBit(paletteMax - 1) == -1,
                 "entry over %s", paletteMax - 1);
     }

@@ -2,6 +2,7 @@ package me.kenzierocks.spongeschem.io;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -34,8 +35,7 @@ public class DeserializerTest {
     private static byte[] getTagBytes(String filename) throws Exception {
         CompoundTag tag = getTag(filename);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try (
-                NBTOutputStream s = new NBTOutputStream(out)) {
+        try (NBTOutputStream s = new NBTOutputStream(out)) {
             s.writeTag(tag);
         }
         return out.toByteArray();
@@ -57,6 +57,26 @@ public class DeserializerTest {
         Optional<ResourceLocation> block =
                 blockData.getBlock(Schematic3PointI.ZERO);
         assertFalse(block.isPresent());
+    }
+
+    @Test
+    public void deserializeOneBlockSchematic() throws Exception {
+        byte[] tag = getTagBytes("oneblockschem");
+        Schematic schem = new InputStreamSchematicDeserializer()
+                .decode(new ByteArrayInputStream(tag));
+
+        BlockData blockData = schem.getBlockData();
+        assertEquals(blockData.getDimensions(),
+                Schematic3PointI.create(1, 1, 1));
+
+        Palette pallete = blockData.getPallete();
+        assertEquals(1, pallete.getBitsPerBlock());
+        assertEquals(1, pallete.getMax());
+
+        Optional<ResourceLocation> block =
+                blockData.getBlock(Schematic3PointI.ZERO);
+        assertTrue(block.isPresent());
+        assertEquals(ResourceLocation.at("minecraft", "air"), block.get());
     }
 
 }

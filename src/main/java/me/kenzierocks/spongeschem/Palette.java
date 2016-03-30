@@ -101,10 +101,16 @@ public abstract class Palette {
         // This is the `ceil(lg(length))` specified in the schematic spec
         // But way more optimized.
         // Special case: empty values should be 0
-        if (getMax() <= 1) {
+        int max = getMax();
+        if (max == 0) {
             return 0;
         }
-        return Integer.SIZE - Integer.numberOfLeadingZeros(getMax() - 1);
+        // Special case: with a max of 1, we still need 1 bit to tell us there's
+        // "info"
+        if (max == 1) {
+            return 1;
+        }
+        return Integer.SIZE - Integer.numberOfLeadingZeros(max - 1);
     }
 
     public Immutable toImmutable() {

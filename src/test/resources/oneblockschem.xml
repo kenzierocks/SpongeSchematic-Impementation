@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<compound xmlns="https://kenzierocks.me/xmlnbt/" xmlns:xsi="http://www.w3.org/2001/XMLSchema"
+	xsi:schemaLocation="https://kenzierocks.me/xmlnbt/">
+    <int name="Version">1</int>
+    <short name="Width">1</short>
+    <short name="Height">1</short>
+    <short name="Length">1</short>
+    <int name="PaletteMax">2</int>
+    <compound name="Palette">
+        <int name="minecraft:air">0</int>
+    </compound>
+    <bytearray name="BlockData">
+        <byte>0</byte>
+    </bytearray>
+</compound>

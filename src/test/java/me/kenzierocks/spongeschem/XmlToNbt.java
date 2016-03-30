@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkState;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jnbt.ByteArrayTag;
 import org.jnbt.ByteTag;
@@ -40,13 +41,15 @@ public final class XmlToNbt {
     private static final String SHORT = "short";
     private static final String STRING = "string";
 
+    private static Stream<XML> notXPathSelect(XML xml, String tagName) {
+        // XPATH SUCKS
+        return xml.nodes("*").stream()
+                .filter(ch -> ch.node().getNodeName().equals(tagName));
+    }
+
     public static CompoundTag transform(XMLDocument obj) {
-        // Because XPATH is stupid
         List<XML> compoundTags =
-                obj.nodes("*").stream()
-                        .filter(node -> node.node().getNodeName()
-                                .equals("compound"))
-                        .collect(Collectors.toList());
+                notXPathSelect(obj, COMPOUND).collect(Collectors.toList());
         checkState(!compoundTags.isEmpty(), "no root compound tag in %s", obj);
         checkState(compoundTags.size() == 1,
                 "too many root compound tags in %s", obj);
@@ -104,7 +107,8 @@ public final class XmlToNbt {
 
     private static ByteArrayTag parseByteArray(XML xml) {
         String name = getName(xml);
-        List<XML> bytes = xml.nodes(BYTE);
+        List<XML> bytes =
+                notXPathSelect(xml, BYTE).collect(Collectors.toList());
         byte[] value = new byte[bytes.size()];
         for (int i = 0; i < bytes.size(); i++) {
             value[i] = parseByte(bytes.get(i)).getValue();
@@ -135,9 +139,8 @@ public final class XmlToNbt {
 
     private static IntArrayTag parseIntArray(XML xml) {
         String name = getName(xml);
-        List<XML> ints = xml.nodes(INT);
-        int[] value =
-                ints.stream().mapToInt(x -> parseInt(x).getValue()).toArray();
+        int[] value = notXPathSelect(xml, INT)
+                .mapToInt(x -> parseInt(x).getValue()).toArray();
         return new IntArrayTag(name, value);
     }
 

@@ -2,7 +2,10 @@ package me.kenzierocks.spongeschem;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.google.auto.value.AutoValue;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Splitter;
 
 public interface ResourceLocation {
@@ -16,7 +19,8 @@ public interface ResourceLocation {
         }
     }
 
-    static ResourceLocation at(String domain, String name) {
+    static ResourceLocation at(@Nullable String domain, String name) {
+        domain = MoreObjects.firstNonNull(domain, "minecraft");
         return new AutoValue_ResourceLocation_DefaultImpl(domain, name);
     }
 

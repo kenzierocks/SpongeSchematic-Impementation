@@ -74,7 +74,7 @@ public class InputStreamSchematicDeserializer {
                                 e -> ((IntTag) e.getValue()).getValue())));
         palette.verifyMax(paletteMax);
         BlockData blockData = BlockData.immutable(
-                Schematic3PointI.DefaultImpl.create(width, height, length),
+                Schematic3PointI.create(width, height, length),
                 palette, ByteArrayBitSet
                         .immutable(parseByteArray(data.get(BLOCK_DATA_TAG))));
         builder.blockData(blockData);
@@ -99,7 +99,7 @@ public class InputStreamSchematicDeserializer {
             checkState(data.size() == 3, "bad offset tag");
             int[] offset = data.stream()
                     .mapToInt(tag -> ((IntTag) tag).getValue()).toArray();
-            builder.offset(Schematic3PointI.DefaultImpl.create(offset[0],
+            builder.offset(Schematic3PointI.create(offset[0],
                     offset[1], offset[2]));
         }
     }

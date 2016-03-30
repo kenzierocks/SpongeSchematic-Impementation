@@ -9,14 +9,14 @@ import com.google.auto.value.AutoValue;
  */
 public interface Schematic3PointI {
 
-    static final Schematic3PointI ZERO = DefaultImpl.create(0, 0, 0);
+    static final Schematic3PointI ZERO = create(0, 0, 0);
+
+    static Schematic3PointI create(int x, int y, int z) {
+        return new AutoValue_Schematic3PointI_DefaultImpl(x, y, z);
+    }
 
     @AutoValue
     abstract class DefaultImpl implements Schematic3PointI {
-
-        public static Schematic3PointI create(int x, int y, int z) {
-            return new AutoValue_Schematic3PointI_DefaultImpl(x, y, z);
-        }
 
         DefaultImpl() {
         }

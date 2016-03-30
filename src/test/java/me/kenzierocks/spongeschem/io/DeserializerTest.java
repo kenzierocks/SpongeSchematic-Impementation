@@ -1,14 +1,11 @@
 package me.kenzierocks.spongeschem.io;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
 
 import org.jnbt.CompoundTag;
 import org.jnbt.NBTOutputStream;
@@ -41,6 +38,39 @@ public class DeserializerTest {
         return out.toByteArray();
     }
 
+    private static ResourceLocation[][][] getBlockArray(Schematic schematic) {
+        BlockData data = schematic.getBlockData();
+        Schematic3PointI dim = data.getDimensions();
+        ResourceLocation[][][] result =
+                new ResourceLocation[dim.getX()][dim.getY()][dim.getZ()];
+        for (int i = 0; i < dim.getX(); i++) {
+            for (int j = 0; j < dim.getY(); j++) {
+                for (int k = 0; k < dim.getZ(); k++) {
+                    result[i][j][k] =
+                            data.getBlock(Schematic3PointI.create(i, j, k))
+                                    .orElse(null);
+                }
+            }
+        }
+        return result;
+    }
+
+    private static void assertResEquals(ResourceLocation[][][] array, int x,
+            int y, int z, String resLoc) {
+        ResourceLocation res = null;
+        if (x < array.length && y < array[0].length && z < array[0][0].length) {
+            res = array[x][y][z];
+        }
+        String actual = res == null ? null : res.toString();
+        assertEquals(String.format("differ at (%s, %s, %s)", x, y, z), resLoc,
+                actual);
+    }
+
+    private static void assertResEquals(Schematic schematic, int x, int y,
+            int z, String resLoc) {
+        assertResEquals(getBlockArray(schematic), x, y, z, resLoc);
+    }
+
     @Test
     public void deserializeEmptySchematic() throws Exception {
         byte[] tag = getTagBytes("emptyschem");
@@ -54,9 +84,7 @@ public class DeserializerTest {
         assertEquals(0, pallete.getBitsPerBlock());
         assertEquals(0, pallete.getMax());
 
-        Optional<ResourceLocation> block =
-                blockData.getBlock(Schematic3PointI.ZERO);
-        assertFalse(block.isPresent());
+        assertResEquals(schem, 0, 0, 0, null);
     }
 
     @Test
@@ -73,10 +101,31 @@ public class DeserializerTest {
         assertEquals(1, pallete.getBitsPerBlock());
         assertEquals(1, pallete.getMax());
 
-        Optional<ResourceLocation> block =
-                blockData.getBlock(Schematic3PointI.ZERO);
-        assertTrue(block.isPresent());
-        assertEquals(ResourceLocation.at("minecraft", "air"), block.get());
+        assertResEquals(schem, 0, 0, 0, "minecraft:air");
+    }
+
+    @Test
+    public void deserializeEightBlockSchematic() throws Exception {
+        byte[] tag = getTagBytes("eightblockschem");
+        Schematic schem = new InputStreamSchematicDeserializer()
+                .decode(new ByteArrayInputStream(tag));
+
+        BlockData blockData = schem.getBlockData();
+        assertEquals(blockData.getDimensions(),
+                Schematic3PointI.create(2, 2, 2));
+
+        Palette pallete = blockData.getPallete();
+        assertEquals(1, pallete.getBitsPerBlock());
+        assertEquals(1, pallete.getMax());
+
+        ResourceLocation[][][] array = getBlockArray(schem);
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 2; j++) {
+                for (int k = 0; k < 2; k++) {
+                    assertResEquals(array, i, j, k, "minecraft:air");
+                }
+            }
+        }
     }
 
 }

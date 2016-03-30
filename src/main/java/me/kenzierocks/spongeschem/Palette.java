@@ -128,16 +128,19 @@ public abstract class Palette {
     }
 
     /**
-     * Verifies that all entries are {@code < (paletteMax - 1)}.
+     * Verifies that all entries are {@code < (paletteMax - 1)}. Also verifies
+     * that our {@link #getMax()} is the same as {@code paletteMax}.
      */
     public void verifyMax(int paletteMax) {
-        if (paletteMax == 1) {
+        checkArgument(paletteMax == getMax(),
+                "incorrect paletteMax %s, should be %s", paletteMax, getMax());
+        if (paletteMax == 0) {
             checkState(this.usedIndicies.isEmpty(),
                     "found more than 0 entries");
             return;
         }
-        checkState(this.usedIndicies.nextSetBit(paletteMax - 1) == -1,
-                "entry over %s", paletteMax - 1);
+        checkState(this.usedIndicies.nextSetBit(paletteMax) == -1,
+                "entry greater than or equal to %s", paletteMax);
     }
 
 }

@@ -5,7 +5,7 @@
     <short name="Width">0</short>
     <short name="Height">0</short>
     <short name="Length">0</short>
-    <int name="PaletteMax">1</int>
+    <int name="PaletteMax">0</int>
     <compound name="Palette"></compound>
     <bytearray name="BlockData"></bytearray>
 </compound>

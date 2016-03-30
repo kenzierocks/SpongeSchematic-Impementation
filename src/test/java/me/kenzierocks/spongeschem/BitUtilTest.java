@@ -1,10 +1,15 @@
 package me.kenzierocks.spongeschem;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.IntPredicate;
 
 import org.junit.Test;
+
+import com.google.common.base.Throwables;
 
 import me.kenzierocks.spongeschem.util.BitUtil;
 
@@ -66,6 +71,40 @@ public class BitUtilTest {
         bitSet.set(5, false);
         int bits = BitUtil.collectBits(0, 6, bitSet);
         assertEquals("unequal bits", 42, bits);
+    }
+
+    @Test
+    public void collectTooManyBits() {
+        try {
+            BitUtil.collectBits(0, Integer.MAX_VALUE, null);
+            fail("Collecting >32 bits should be impossible.");
+        } catch (IllegalArgumentException expected) {
+            // ok
+        }
+    }
+
+    @Test
+    public void unconstructable() throws Throwable {
+        try {
+            try {
+                Constructor<BitUtil> bitUtilCons =
+                        BitUtil.class.getDeclaredConstructor();
+                bitUtilCons.setAccessible(true);
+                BitUtil bitUtil = bitUtilCons.newInstance();
+                fail("Was able to create a bit util " + bitUtil);
+            } catch (NoSuchMethodException | InstantiationException
+                    | IllegalAccessException | IllegalArgumentException
+                    | InvocationTargetException ex) {
+                if (ex instanceof InvocationTargetException) {
+                    InvocationTargetException wrapper =
+                            (InvocationTargetException) ex;
+                    throw wrapper.getCause();
+                }
+                throw Throwables.propagate(ex);
+            }
+        } catch (AssertionError expected) {
+            // ok
+        }
     }
 
 }

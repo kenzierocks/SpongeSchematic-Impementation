@@ -11,6 +11,7 @@ import java.util.OptionalInt;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.Maps;
 
 public abstract class Palette {
 
@@ -75,11 +76,13 @@ public abstract class Palette {
     }
 
     protected final BitSet usedIndicies = new BitSet();
+    private transient final BiMap<ResourceLocation, Integer> viewOfBlockIdMap;
     protected final BiMap<ResourceLocation, Integer> blockIdMap;
 
     protected Palette(BiMap<ResourceLocation, Integer> blockIdMap) {
         this.blockIdMap = blockIdMap;
         this.blockIdMap.values().forEach(this.usedIndicies::set);
+        this.viewOfBlockIdMap = Maps.unmodifiableBiMap(this.blockIdMap);
     }
 
     public Optional<ResourceLocation> getIdFromIndex(int index) {
@@ -111,6 +114,10 @@ public abstract class Palette {
             return 1;
         }
         return Integer.SIZE - Integer.numberOfLeadingZeros(max - 1);
+    }
+
+    public BiMap<ResourceLocation, Integer> getBlockIdMap() {
+        return this.viewOfBlockIdMap;
     }
 
     public Immutable toImmutable() {

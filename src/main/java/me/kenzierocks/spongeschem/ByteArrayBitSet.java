@@ -116,7 +116,7 @@ public abstract class ByteArrayBitSet {
     }
 
     public static Immutable immutable(byte[] data) {
-        return new Immutable(data);
+        return new Immutable(data.clone());
     }
 
     public static final class Immutable extends ByteArrayBitSet {
@@ -125,7 +125,7 @@ public abstract class ByteArrayBitSet {
         private transient String toStringCache;
 
         private Immutable(byte[] data) {
-            this.data = data.clone();
+            this.data = data;
         }
 
         @Override

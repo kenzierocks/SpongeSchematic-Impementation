@@ -1,7 +1,6 @@
 package me.kenzierocks.spongeschem;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -80,6 +79,97 @@ public class BitUtilTest {
             fail("Collecting >32 bits should be impossible.");
         } catch (IllegalArgumentException expected) {
             // ok
+        }
+    }
+
+    @Test
+    public void spreadZeroBits() {
+        ByteArrayBitSet.Mutable bitSet = ByteArrayBitSet.mutable();
+        BitUtil.spreadBits(0, 0, 0, bitSet);
+        assertFalse("bit spread occured", bitSet.get(0));
+    }
+
+    @Test
+    public void spreadTenZeroBits() {
+        ByteArrayBitSet.Mutable bitSet = ByteArrayBitSet.mutable();
+        BitUtil.spreadBits(0, 0, 10, bitSet);
+        for (int i = 0; i < 10; i++) {
+            assertFalse("bit spread occured at " + i, bitSet.get(i));
+        }
+    }
+
+    @Test
+    public void spreadOneOneBit() {
+        ByteArrayBitSet.Mutable bitSet = ByteArrayBitSet.mutable();
+        BitUtil.spreadBits(1, 0, 1, bitSet);
+        assertTrue("bit spread did not occur", bitSet.get(0));
+    }
+
+    @Test
+    public void spreadTwoOneBits() {
+        ByteArrayBitSet.Mutable bitSet = ByteArrayBitSet.mutable();
+        BitUtil.spreadBits(1 | 2, 0, 2, bitSet);
+        assertTrue("bit spread did not occur", bitSet.get(0));
+        assertTrue("bit spread did not occur", bitSet.get(1));
+    }
+
+    @Test
+    public void spreadOneOffsetOneBit() {
+        ByteArrayBitSet.Mutable bitSet = ByteArrayBitSet.mutable();
+        BitUtil.spreadBits(1, 9, 1, bitSet);
+        for (int i = 0; i < 9; i++) {
+            assertFalse("bit spread occured at " + i, bitSet.get(i));
+        }
+        assertTrue("bit spread did not occur", bitSet.get(9));
+        assertFalse("bit spread occured", bitSet.get(10));
+    }
+
+    @Test
+    public void spreadTwoOffsetOneBits() {
+        ByteArrayBitSet.Mutable bitSet = ByteArrayBitSet.mutable();
+        BitUtil.spreadBits(1 | 2, 9, 2, bitSet);
+        for (int i = 0; i < 8; i++) {
+            assertFalse("bit spread occured at " + i, bitSet.get(i));
+        }
+        assertTrue("bit spread did not occur", bitSet.get(9));
+        assertTrue("bit spread did not occur", bitSet.get(10));
+        assertFalse("bit spread occured", bitSet.get(11));
+    }
+
+    @Test
+    public void spreadTheNumber42() {
+        ByteArrayBitSet.Mutable expected = ByteArrayBitSet.mutable();
+        // 42 = 0b101010 (012345)
+        expected.set(0, true);
+        expected.set(1, false);
+        expected.set(2, true);
+        expected.set(3, false);
+        expected.set(4, true);
+        expected.set(5, false);
+        ByteArrayBitSet.Mutable bitSet = ByteArrayBitSet.mutable();
+        BitUtil.spreadBits(42, 0, 6, bitSet);
+        assertEquals("unequal bits", expected, bitSet);
+    }
+
+    @Test
+    public void spreadTooManyBits() {
+        try {
+            BitUtil.spreadBits(0, 0, Integer.MAX_VALUE, null);
+            fail("Spreading >32 bits should be impossible.");
+        } catch (IllegalArgumentException expected) {
+            // ok
+        }
+    }
+
+    @Test
+    public void collectReversesSpread() throws Exception {
+        for (int i = 2; i < 100; i++) {
+            ByteArrayBitSet.Mutable spreaded = ByteArrayBitSet.mutable();
+            int bitLen = 32 - Integer.numberOfLeadingZeros(i - 1) + 1; // ???
+            BitUtil.spreadBits(i, 0, bitLen, spreaded);
+            int collected = BitUtil.collectBits(0, bitLen, spreaded);
+            assertEquals("collect didn't reverse spread (spreaded: " + spreaded
+                    + ", bitLen: " + bitLen + ")", i, collected);
         }
     }
 

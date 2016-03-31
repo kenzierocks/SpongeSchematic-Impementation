@@ -31,9 +31,11 @@ public final class BitUtil {
     public static void spreadBits(int data, int index, int length,
             ByteArrayBitSet.Mutable bitAccess) {
         checkArgument(length <= Integer.SIZE, "too many bits!");
-        for (int i = 0; i < length; i++) {
-            boolean bitAt = (data & (1 << i)) != 0;
-            bitAccess.set(index + i, bitAt);
+        int max = index + length;
+        for (int i = index; i < max; i++) {
+            int shiftAmount = (max - i - 1);
+            boolean bitAt = (data & (1 << shiftAmount)) != 0;
+            bitAccess.set(i, bitAt);
         }
     }
 

@@ -86,10 +86,11 @@ public abstract class ByteArrayBitSet {
         public void set(int index, boolean on) {
             ensureCapacity(index + 1);
             boolean prev = get(index);
+            int shiftedBit = 1 << getBitOffset(index);
             if (on) {
-                this.data[getIndex(index)] |= (1 << getBitOffset(index));
+                this.data[getIndex(index)] |= shiftedBit;
             } else {
-                this.data[getIndex(index)] &= ~(1 << getBitOffset(index));
+                this.data[getIndex(index)] &= ~shiftedBit;
             }
             if (prev != on) {
                 this.toStringCache = null;
@@ -142,8 +143,10 @@ public abstract class ByteArrayBitSet {
     }
 
     public boolean get(int index) {
-        return (getDataNoCopy()[getIndex(index)]
-                & (1 << getBitOffset(index))) != 0;
+        byte[] data = getDataNoCopy();
+        int arrIndex = getIndex(index);
+        return arrIndex < data.length
+                && (data[arrIndex] & (1 << getBitOffset(index))) != 0;
     }
 
     public int length() {
@@ -181,6 +184,20 @@ public abstract class ByteArrayBitSet {
         }
         b.append('}');
         return b.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(getDataNoCopy());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ByteArrayBitSet)) {
+            return false;
+        }
+        ByteArrayBitSet other = (ByteArrayBitSet) obj;
+        return Arrays.equals(other.getDataNoCopy(), getDataNoCopy());
     }
 
 }

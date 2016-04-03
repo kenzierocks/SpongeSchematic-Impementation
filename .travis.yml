@@ -1,5 +1,4 @@
 language: java
-before_script: ./install-hnbt.sh
 script: ./gradlew build -s
 jdk:
   - oraclejdk8
@@ -20,6 +19,7 @@ addons:
 # Code Coverage!
 before_install:
   - pip install --user codecov
+  - ./install-hnbt.sh
 after_success:
   - codecov
 after_script:

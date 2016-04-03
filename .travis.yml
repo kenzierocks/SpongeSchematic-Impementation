@@ -1,4 +1,5 @@
 language: java
+before_script: ./install-hnbt.sh
 script: ./gradlew build -s
 jdk:
   - oraclejdk8

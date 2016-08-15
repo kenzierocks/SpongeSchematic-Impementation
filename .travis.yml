@@ -19,7 +19,6 @@ addons:
 # Code Coverage!
 before_install:
   - pip install --user codecov
-  - ./install-hnbt.sh
 after_success:
   - codecov
 after_script:

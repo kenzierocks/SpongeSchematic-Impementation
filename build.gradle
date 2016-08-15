@@ -4,19 +4,19 @@ buildscript {
         maven {
             url "https://oss.sonatype.org/content/repositories/snapshots/"
         }
-        maven {
-            url "http://techshroom.github.io/downloads/maven"
-        }
     }
-    
+
     configurations.all {
         resolutionStrategy {
             cacheChangingModulesFor 0, 'seconds'
         }
     }
     dependencies {
-        classpath group: 'com.techshroom', name: 'Aversion', version: '1.0.1-SNAPSHOT'
+        classpath group: 'com.techshroom', name: 'Aversion', version: '2.0.1'
     }
+}
+plugins {
+    id 'net.researchgate.release' version '2.4.0'
 }
 
 apply plugin: 'java'
@@ -37,8 +37,12 @@ util {
 
 idea.project.languageLevel = util.javaVersion
 
-version = '0.0.1-SNAPSHOT'
 group = 'me.kenzierocks'
+
+mavencfg {
+    description 'An implementation of the Sponge schematic spec'
+    coords 'kenzierocks', 'SpongeSchematic-Implementation'
+}
 
 repositories {
     mavenCentral()
@@ -50,11 +54,7 @@ repositories {
 }
 configurations.all {
    resolutionStrategy {
-     // fail eagerly on version conflict (includes transitive dependencies)
-     // e.g. multiple different versions of the same dependency (group and name are equal)
      failOnVersionConflict()
-
-     // force certain versions of dependencies (including transitive)
      force 'com.google.auto.service:auto-service:1.0-SNAPSHOT', 'com.google.guava:guava:18.0',
            'com.google.dagger:dagger:2.0', 'com.google.auto:auto-common:0.4',
            'com.google.auto.value:auto-value:1.3-SNAPSHOT',
@@ -62,8 +62,6 @@ configurations.all {
            'commons-codec:commons-codec:1.7', 'org.slf4j:slf4j-api:1.7.16',
            'com.jcabi:jcabi-aspects:0.22', 'com.jcabi:jcabi-log:0.17'
 
-     cacheDynamicVersionsFor 10, 'minutes'
-     // don't cache changing modules at all
      cacheChangingModulesFor 0, 'seconds'
    }
 }
@@ -72,15 +70,11 @@ def SLF_VERSION = '1.7.16'
 dependencies {
     compile group: 'ch.qos.logback', name: 'logback-core', version: LOGBACK_VERSION
     compile group: 'ch.qos.logback', name: 'logback-classic', version: LOGBACK_VERSION
-    // Because why not?
-    runtime group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.5'
     compile files('libs/JNBT_1.4.jar')
-    compile group: 'com.jcabi', name: 'jcabi-xml', version: '0.17.2'
     compile group: 'org.slf4j', name: 'slf4j-api', version: SLF_VERSION
     compile group: 'com.google.code.gson', name: 'gson', version: '2.3'
-    compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
-    // N.B. required from mavenLocal() right now, please install it yourself or with ./install-hnbt.sh
-    compile group: 'me.kenzierocks', name: 'hnbt', version: '0.0.1-SNAPSHOT'
+    compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+    compile group: 'me.kenzierocks', name: 'hnbt', version: '0.0.1'
     addAPTReqWComp group: 'com.google.guava', name: 'guava', version: '18.0'
     addAPT group: 'com.google.auto.value', name: 'auto-value', version: '1.3-SNAPSHOT'
     addAPTReq name: 'aopalliance'
@@ -95,7 +89,7 @@ dependencies {
     addAPTReq name: 'javax.inject'
     addAPTReq name: 'velocity'
 
-    testCompile group: 'junit', name: 'junit', version: '4.+'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
 jacocoTestReport {

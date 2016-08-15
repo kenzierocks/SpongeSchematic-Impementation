@@ -1,3 +1,5 @@
+codecov:
+    bot: SiliconChip
 comment:
   layout: header, changes, diff
 coverage:
